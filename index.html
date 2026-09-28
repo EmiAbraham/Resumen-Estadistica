@@ -1,0 +1,1642 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resumen EED2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: una columna de lectura con widgets a todo el ancho y una barra de clases fija arriba.
+   Identidad tomada del propio módulo ISSD: bordó, Source Sans y Space Mono. */
+:root {
+  --bg: #f5f4f6;
+  --surface: #ffffff;
+  --ink: #1d1a1f;
+  --ink-2: #4f4a54;
+  --muted: #6f6975;
+  --line: #e2dfe5;
+  --grid: #ebe8ee;
+  --axis: #c7c2cc;
+  --accent: #7b1a3e;
+  --accent-ink: #ffffff;
+  --accent-soft: #f4e7ec;
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --font-body: "Source Sans 3", "Source Sans Pro", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141215;
+    --surface: #1d1a1f;
+    --ink: #f2eff3;
+    --ink-2: #c5bfc8;
+    --muted: #958e9a;
+    --line: #322d35;
+    --grid: #2a262d;
+    --axis: #4a444e;
+    --accent: #e58aa6;
+    --accent-ink: #1a1216;
+    --accent-soft: #3a2230;
+    --s1: #3987e5;
+    --s2: #d95926;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141215;
+  --surface: #1d1a1f;
+  --ink: #f2eff3;
+  --ink-2: #c5bfc8;
+  --muted: #958e9a;
+  --line: #322d35;
+  --grid: #2a262d;
+  --axis: #4a444e;
+  --accent: #e58aa6;
+  --accent-ink: #1a1216;
+  --accent-soft: #3a2230;
+  --s1: #3987e5;
+  --s2: #d95926;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.page { max-width: 52rem; margin: 0 auto; padding-inline: 16px; padding-block: 0 4rem; }
+@media (min-width: 700px) { .page { padding-inline: 32px; } }
+
+h1, h2, h3, h4 { text-wrap: balance; line-height: 1.15; margin: 0; }
+p { margin: 0; }
+.prose { max-width: 68ch; display: grid; gap: .8rem; }
+strong { font-weight: 700; }
+em { font-style: italic; }
+code, .mono { font-family: var(--font-mono); font-size: .86em; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+/* Cabecera */
+.masthead { padding-block: 2.5rem 1.5rem; display: grid; gap: .9rem; }
+.eyebrow {
+  font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted);
+}
+.masthead h1 { font-size: clamp(2.1rem, 6vw, 3.4rem); font-weight: 800; letter-spacing: -.01em; }
+.masthead h1 span { color: var(--accent); }
+.masthead .lead { font-size: 1.15rem; color: var(--ink-2); max-width: 60ch; }
+
+/* Navegación por clase */
+.classnav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  margin-inline: -16px; padding: .55rem 16px;
+}
+@media (min-width: 700px) { .classnav { margin-inline: -32px; padding-inline: 32px; } }
+.classnav ol { list-style: none; margin: 0; padding: 0; display: flex; gap: .4rem; overflow-x: auto; scrollbar-width: none; }
+.classnav ol::-webkit-scrollbar { display: none; }
+.classnav a {
+  display: flex; gap: .4rem; align-items: baseline; white-space: nowrap;
+  padding: .3rem .7rem; border-radius: 999px; text-decoration: none;
+  color: var(--ink-2); font-size: .92rem; font-weight: 600;
+  border: 1px solid var(--line); background: var(--surface);
+}
+.classnav a span { font-family: var(--font-mono); font-size: .72rem; color: var(--muted); font-weight: 400; }
+.classnav a:hover { border-color: var(--axis); }
+.classnav a[aria-current="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.classnav a[aria-current="true"] span { color: var(--accent-ink); opacity: .8; }
+
+/* Secciones de clase */
+.clase { padding-block: 3.2rem 1rem; display: grid; gap: 1.4rem; scroll-margin-top: 3.5rem; }
+.clase-head { display: grid; gap: .35rem; border-bottom: 1px solid var(--accent); padding-bottom: .9rem; }
+.clase-head .eyebrow { color: var(--accent); }
+.clase-head h2 { font-size: clamp(1.8rem, 4.6vw, 2.5rem); font-weight: 800; color: var(--accent); }
+.clase-head h2 .num { font-weight: 300; color: var(--accent); margin-right: .15em; }
+.clase h3 { font-size: 1.3rem; font-weight: 700; margin-top: .8rem; }
+.clase > * { min-width: 0; }
+
+/* Listas de conceptos */
+.defs { display: grid; gap: .9rem; margin: 0; }
+.defs div { display: grid; gap: .1rem; }
+.defs dt { font-weight: 700; }
+.defs dd { margin: 0; color: var(--ink-2); }
+@media (min-width: 700px) {
+  .defs.wide div { grid-template-columns: 11rem 1fr; gap: 1.2rem; }
+}
+
+.grid2 { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr)); }
+.grid2 > * { min-width: 0; }
+.cols3 { display: grid; gap: 1.2rem 1.6rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+.cols3 h4 {
+  font-family: var(--font-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--accent); padding-bottom: .4rem; border-bottom: 1px solid var(--line); margin-bottom: .5rem;
+}
+.cols3 ol { margin: 0; padding-left: 1.3rem; display: grid; gap: .3rem; font-size: .97rem; }
+.cols3 li::marker { font-family: var(--font-mono); font-size: .8em; color: var(--muted); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.1rem; display: grid; gap: .35rem; align-content: start; }
+.card h4 { font-size: 1.05rem; }
+.card p { color: var(--ink-2); font-size: .97rem; }
+.card .formula { margin-top: .2rem; }
+
+/* Línea de tiempo */
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: .55rem; }
+.timeline li { display: grid; grid-template-columns: 6.2rem 1fr; gap: .8rem; align-items: baseline; }
+.timeline .yr { font-family: var(--font-mono); font-size: .8rem; color: var(--accent); font-weight: 700; }
+.timeline p { color: var(--ink-2); font-size: .97rem; }
+
+/* Tablas */
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .97rem; }
+th, td { text-align: left; padding: .55rem .7rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+tbody th { font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+td b { color: var(--ink); }
+td small { display: block; color: var(--muted); font-size: .88rem; line-height: 1.4; }
+.num-col { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* Fórmulas */
+.formula {
+  overflow-x: auto; padding: .7rem .9rem; border-radius: 8px;
+  background: var(--accent-soft); color: var(--ink);
+  display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; align-items: center;
+}
+.formula math { font-size: 1.2rem; }
+.formula .cap { font-size: .85rem; color: var(--ink-2); }
+math .xbar { font-style: italic; }
+math { font-family: "STIX Two Math", "Cambria Math", "Latin Modern Math", math; }
+.formulas { display: grid; gap: .6rem; }
+
+/* Ejemplos, notas y código */
+.example { border: 1px dashed var(--axis); border-radius: var(--radius); padding: 1rem 1.1rem; display: grid; gap: .5rem; }
+.tag {
+  font-family: var(--font-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+}
+.example .res { font-weight: 600; }
+.note { font-size: .93rem; color: var(--ink-2); }
+.note .tag { color: var(--accent); display: block; margin-bottom: .15rem; }
+.key { font-weight: 600; font-size: 1.05rem; }
+pre {
+  margin: 0; overflow-x: auto; padding: .9rem 1rem; border: 1px dashed var(--axis); border-radius: 8px;
+  font-family: var(--font-mono); font-size: .8rem; line-height: 1.55; color: var(--ink);
+  background: var(--surface);
+}
+pre .c { color: var(--muted); }
+pre .k { color: var(--accent); }
+
+details.sol { border-top: 1px solid var(--line); padding-top: .6rem; }
+details.sol summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+details.sol ol { margin: .6rem 0 0; padding-left: 1.3rem; display: grid; gap: .6rem; }
+details.sol li p { color: var(--ink-2); }
+
+/* Widgets */
+.widget {
+  margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 1.1rem 1.1rem 1rem; display: grid; gap: .9rem;
+}
+@media (min-width: 700px) { .widget { padding: 1.3rem 1.4rem 1.2rem; } }
+.w-head { display: grid; gap: .25rem; }
+.w-head .tag { color: var(--accent); }
+.w-head h4 { font-size: 1.12rem; }
+.w-head p { color: var(--ink-2); font-size: .95rem; }
+.controls { display: flex; flex-wrap: wrap; gap: .8rem 1.4rem; align-items: end; }
+.ctl { display: grid; gap: .25rem; min-width: 0; }
+.ctl label, .ctl .lab { font-size: .82rem; color: var(--muted); font-family: var(--font-mono); }
+.ctl output, .ctl .val { font-family: var(--font-mono); font-size: .95rem; color: var(--ink); font-weight: 700; }
+.ctl.grow { flex: 1 1 14rem; }
+.ctl .row { display: flex; gap: .6rem; align-items: center; }
+input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; }
+input[type="number"], select {
+  font: inherit; font-size: .95rem; color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 7px; padding: .35rem .5rem; width: 7.5rem; max-width: 100%;
+}
+select { width: auto; }
+.btn {
+  font: inherit; font-size: .9rem; font-weight: 600; cursor: pointer;
+  padding: .38rem .8rem; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--ink);
+}
+.btn:hover { border-color: var(--axis); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.presets { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+.presets .lab { font-size: .82rem; color: var(--muted); font-family: var(--font-mono); margin-right: .2rem; }
+.seg { display: flex; flex-wrap: wrap; gap: .3rem; border: 0; padding: 0; margin: 0; }
+.seg legend { font-size: .82rem; color: var(--muted); font-family: var(--font-mono); margin-bottom: .25rem; padding: 0; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label {
+  cursor: pointer; font-size: .9rem; font-weight: 600; padding: .32rem .7rem; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink-2);
+}
+.seg input:checked + label { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.seg input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.plots { display: grid; gap: 1rem; }
+@media (min-width: 720px) { .plots.split { grid-template-columns: 1fr 2fr; } }
+.plot-wrap { display: grid; gap: .3rem; min-width: 0; }
+.plot-title { font-size: .85rem; color: var(--ink-2); font-weight: 600; }
+.plot { position: relative; width: 100%; min-width: 0; }
+.plot svg { display: block; overflow: visible; }
+.legend { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; font-size: .85rem; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.sw { width: 11px; height: 11px; border-radius: 3px; display: inline-block; flex: none; }
+.sw.dot { border-radius: 50%; }
+.sw.ring { background: transparent !important; border: 2px solid; border-radius: 50%; }
+.sw.line { height: 3px; width: 16px; border-radius: 2px; }
+.sw.s1 { background: var(--s1); border-color: var(--s1); }
+.sw.s2 { background: var(--s2); border-color: var(--s2); }
+.sw.ink { background: var(--ink-2); }
+
+.readout { display: grid; gap: .35rem; font-size: .97rem; color: var(--ink-2); }
+.readout .stats { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; font-family: var(--font-mono); font-size: .85rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.readout .stats b { color: var(--ink); }
+.readout .big { font-size: 1.1rem; color: var(--ink); }
+.pill {
+  justify-self: start; display: inline-flex; gap: .45rem; align-items: center;
+  padding: .3rem .75rem; border-radius: 999px; font-weight: 600; font-size: .95rem;
+  background: var(--bg); border: 1px solid var(--line); color: var(--ink);
+}
+.pill.on { background: var(--accent-soft); border-color: var(--accent); }
+.pill .ico { font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+
+.tip {
+  position: absolute; pointer-events: none; z-index: 5;
+  background: var(--ink); color: var(--bg);
+  font: 12px/1.4 var(--font-mono); padding: .35rem .55rem; border-radius: 6px; white-space: nowrap;
+}
+
+/* SVG */
+.plot svg text { font-family: var(--font-mono); font-size: 11px; fill: var(--muted); }
+.plot svg .v-lbl { font-family: var(--font-body); font-size: 13px; fill: var(--ink-2); }
+.plot svg .v-strong { font-family: var(--font-body); font-size: 13px; font-weight: 700; fill: var(--ink); }
+.plot svg .halo { paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.v-grid { stroke: var(--grid); stroke-width: 1; }
+.v-axis { stroke: var(--axis); stroke-width: 1; }
+.v-ref { stroke: var(--ink-2); stroke-width: 1.5; }
+.v-f1 { fill: var(--s1); }
+.v-f2 { fill: var(--s2); }
+.v-l1 { fill: none; stroke: var(--s1); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.v-l2 { fill: none; stroke: var(--s2); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.v-wash1 { fill: var(--s1); fill-opacity: .16; }
+.v-wash2 { fill: var(--s2); fill-opacity: .12; }
+.v-wash0 { fill: var(--muted); fill-opacity: .12; }
+.v-ring { stroke: var(--surface); stroke-width: 2; }
+.v-hit { fill: transparent; }
+.v-hit:hover + .v-hover, .v-bar.is-hover { opacity: .75; }
+.v-block { fill: none; stroke: var(--grid); stroke-width: 1.2; }
+.v-block.on { stroke: var(--ink-2); stroke-width: 1.5; }
+.v-out1 { fill: none; stroke: var(--s1); stroke-width: 1.5; opacity: .5; }
+.v-out2 { fill: none; stroke: var(--s2); stroke-width: 1.5; opacity: .5; }
+.v-cross { stroke: var(--ink-2); stroke-width: 1; }
+.v-mark { fill: var(--ink); }
+
+/* Quiz */
+.quiz { margin: 0; padding-left: 1.3rem; display: grid; gap: .9rem; }
+.quiz li { display: grid; gap: .4rem; }
+.quiz li::marker { font-family: var(--font-mono); color: var(--muted); font-size: .85em; }
+.quiz p { font-size: .97rem; color: var(--ink-2); }
+.quiz .ans { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.q-res { font-size: .9rem; font-weight: 600; }
+.q-res.ok { color: var(--ink); }
+.q-res.ok::before { content: "✓ "; color: var(--accent); }
+.q-res.bad::before { content: "✗ "; color: var(--accent); }
+
+footer.colofon { margin-top: 3rem; padding-top: 1.2rem; border-top: 1px solid var(--line); font-size: .9rem; color: var(--muted); display: grid; gap: .3rem; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+</style>
+</head>
+<body>
+<div class="page" lang="es">
+
+<header class="masthead">
+  <p class="eyebrow">Resumen · EED2 · Inteligencia Artificial y Ciencia de Datos · ISSD</p>
+  <h1>Estadística y <span>Exploración de Datos</span></h1>
+  <p class="lead">Clases 1 a 6, de la encuesta al contraste de hipótesis. Los conceptos clave, las fórmulas y los ejemplos del módulo, con gráficos que podés mover para ver cómo funciona cada idea.</p>
+</header>
+
+<nav class="classnav" aria-label="Clases">
+  <ol>
+    <li><a href="#encuesta"><span>01</span>Encuesta</a></li>
+    <li><a href="#muestreo"><span>02</span>Muestreo</a></li>
+    <li><a href="#distribucion"><span>03</span>Distribución muestral</a></li>
+    <li><a href="#estimacion"><span>04</span>Estimación</a></li>
+    <li><a href="#tipos"><span>05</span>Tipos de muestreo</a></li>
+    <li><a href="#hipotesis"><span>06</span>Contraste de hipótesis</a></li>
+  </ol>
+</nav>
+
+<!-- ============================ 01 ENCUESTA ============================ -->
+<section class="clase" id="encuesta">
+  <header class="clase-head">
+    <p class="eyebrow">Unidad 1 · Clase 1.01</p>
+    <h2><span class="num">01.</span>Encuesta</h2>
+  </header>
+
+  <div class="prose">
+    <p>Una <strong>encuesta</strong> toma información de una <strong>muestra</strong> para <strong>inferir</strong> cómo es la <strong>población</strong> de la que salió. Además de estimar, sirve para generar hipótesis y nuevas líneas de investigación.</p>
+  </div>
+
+  <h3>Hitos</h3>
+  <ol class="timeline">
+    <li><span class="yr">Siglo XIX</span><p>Booth y Webb estudian con encuestas la pobreza, el empleo y la educación. Galton, Pearson y Spearman sientan las bases estadísticas.</p></li>
+    <li><span class="yr">1903 · Berlín</span><p>El Instituto Internacional de Estadística apoya el “método representativo”.</p></li>
+    <li><span class="yr">1926 · Roma</span><p>Un informe del mismo instituto defiende la inferencia estadística para estimar parámetros poblacionales.</p></li>
+    <li><span class="yr">1934 · Neyman</span><p>Fundamenta la selección aleatoria de la muestra e introduce la precisión de las estimaciones.</p></li>
+    <li><span class="yr">Años 30 · EE. UU.</span><p>Gallup, Roper y Crossley popularizan las encuestas de intención de voto.</p></li>
+  </ol>
+
+  <h3>Tipos de encuesta</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Según</th><th>Un tipo</th><th>El otro</th></tr></thead>
+      <tbody>
+        <tr><th>Objetivo</th><td><b>Descriptiva</b><small>Describe cómo son las cosas.</small></td><td><b>Analítica</b><small>Explica relaciones entre variables y sus causas.</small></td></tr>
+        <tr><th>Naturaleza</th><td><b>Básica</b><small>Busca conocimiento general.</small></td><td><b>Aplicada</b><small>Resuelve un problema concreto (política, mercado, salud).</small></td></tr>
+        <tr><th>Tiempo</th><td><b>Sincrónica</b><small>Un solo momento, como una foto.</small></td><td><b>Diacrónica</b><small>Varios momentos, para ver la evolución.</small></td></tr>
+        <tr><th>Amplitud</th><td><b>Atomística</b><small>Elementos o aspectos puntuales.</small></td><td><b>General</b><small>Fenómenos amplios, visión global.</small></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Población y muestra</h3>
+  <dl class="defs wide">
+    <div><dt>Población</dt><dd>Conjunto de elementos definidos en tiempo y espacio. Sobre ellos se observa en un censo, o a ellos se refieren los resultados en un estudio por muestreo.</dd></div>
+    <div><dt>Muestra</dt><dd>Subconjunto de unidades seleccionadas de la población. Es donde se hacen las observaciones y mediciones.</dd></div>
+    <div><dt>Unidad elemental</dt><dd>Aquella sobre la que se pide información. Es la base del análisis.</dd></div>
+    <div><dt>Unidad de muestreo</dt><dd>Lo que se sortea: cada elemento numerado en el marco muestral. Puede ser la unidad elemental o un conglomerado de ellas.</dd></div>
+    <div><dt>Cobertura</dt><dd>Región geográfica y grupo social que abarca la muestra.</dd></div>
+    <div><dt>Fecha y duración</dt><dd>El período de referencia de los datos y las fechas del trabajo de campo.</dd></div>
+  </dl>
+
+  <div class="example">
+    <span class="tag">Ejemplo · prueba de un herbicida</span>
+    <dl class="defs wide">
+      <div><dt>Unidad elemental</dt><dd>Ingenieros agrónomos a cargo de establecimientos agropecuarios.</dd></div>
+      <div><dt>Unidad de muestreo</dt><dd>1.ª municipios de la pampa húmeda; 2.ª establecimientos con más de 1000 ha de pastoreo.</dd></div>
+      <div><dt>Cobertura</dt><dd>Provincias de Buenos Aires y La Pampa.</dd></div>
+      <div><dt>Período</dt><dd>Referencia: un mes de prueba del herbicida. Campo: enero y febrero de 1996.</dd></div>
+    </dl>
+  </div>
+
+  <figure class="widget" id="w-quiz">
+    <figcaption class="w-head">
+      <span class="tag">Practicá</span>
+      <h4>Complemento dietario en cápsulas</h4>
+      <p>Es el ejercicio de la clase: elegí qué concepto describe cada dato del estudio de mercado.</p>
+    </figcaption>
+    <ol class="quiz">
+      <li>
+        <p>1.ª ciudades de más de 500.000 habitantes, 2.ª barrios o distritos escolares, 3.ª manzanas, 4.ª viviendas, 5.ª hogares, 6.ª personas mayores de 18 años con esos hábitos.</p>
+        <div class="ans"><select id="q1" data-ok="um" aria-label="Dato 1"></select><span class="q-res"></span></div>
+      </li>
+      <li>
+        <p>Hombres y mujeres mayores de 18 años, de ciudades de más de 500.000 habitantes, con una dieta desequilibrada (fast food).</p>
+        <div class="ans"><select id="q2" data-ok="ue" aria-label="Dato 2"></select><span class="q-res"></span></div>
+      </li>
+      <li>
+        <p>Referencia: hábitos alimenticios del último año. Campo: del 15 al 30 de noviembre de 1996.</p>
+        <div class="ans"><select id="q3" data-ok="per" aria-label="Dato 3"></select><span class="q-res"></span></div>
+      </li>
+      <li>
+        <p>Nacional.</p>
+        <div class="ans"><select id="q4" data-ok="cob" aria-label="Dato 4"></select><span class="q-res"></span></div>
+      </li>
+    </ol>
+    <div class="presets"><button class="btn primary" id="q-check" type="button">Comprobar</button></div>
+  </figure>
+</section>
+
+<!-- ============================ 02 MUESTREO ============================ -->
+<section class="clase" id="muestreo">
+  <header class="clase-head">
+    <p class="eyebrow">Unidad 1 · Clase 1.02</p>
+    <h2><span class="num">02.</span>Muestreo</h2>
+  </header>
+
+  <div class="prose">
+    <p>Relevar a toda la población (un <strong>censo</strong>) lleva mucho tiempo y recursos. La <strong>teoría del muestreo</strong> da las técnicas para elegir una parte, calcular el error y el tamaño necesario, y estimar los parámetros de la población a partir de la muestra.</p>
+    <p>El big data no reemplaza al muestreo. Con datos de calidad dispareja, muestrear permite trabajar de forma eficiente y reducir el sesgo, y los modelos predictivos se desarrollan y se prueban con muestras.</p>
+  </div>
+
+  <h3>Cantidad no es calidad: Literary Digest contra Gallup (1936)</h3>
+  <div class="prose">
+    <p>El <em>Literary Digest</em> consultó a más de <strong>10 millones</strong> de personas (sus suscriptores y dueños de teléfono o auto) y predijo que ganaba Landon. Gallup encuestó a <strong>2.000</strong> personas elegidas con un método científico y acertó: ganó Roosevelt. La muestra del Digest tenía <strong>sesgo</strong>: era sistemáticamente distinta de la población que quería representar.</p>
+  </div>
+
+  <figure class="widget" id="w-digest">
+    <figcaption class="w-head">
+      <span class="tag">Interactivo</span>
+      <h4>¿Qué pasa si agrandamos la muestra?</h4>
+      <p>Simulación con valores aproximados a 1936. Las dos muestras tienen el mismo tamaño; lo único que cambia es de dónde salen los encuestados.</p>
+    </figcaption>
+    <div class="controls">
+      <div class="ctl grow">
+        <label for="dg-n">Tamaño de la muestra <output id="dg-n-out" for="dg-n"></output></label>
+        <input type="range" id="dg-n" min="2" max="7" step="any" value="3.30103">
+      </div>
+      <div class="presets">
+        <span class="lab">Ir a</span>
+        <button class="btn" type="button" data-n="2000">2.000 (Gallup)</button>
+        <button class="btn" type="button" data-n="10000000">10 millones (Digest)</button>
+        <button class="btn" type="button" id="dg-redo">Otra muestra</button>
+      </div>
+    </div>
+    <div class="plot" data-label="Estimación del voto a Roosevelt según cada tipo de muestra"></div>
+    <div class="readout" aria-live="polite"></div>
+  </figure>
+  <p class="key">Agrandar la muestra achica el error aleatorio (la barra), pero no corrige el sesgo (la distancia al valor real).</p>
+
+  <h3>Decisiones en tres momentos</h3>
+  <div class="cols3">
+    <div>
+      <h4>Previas al muestreo</h4>
+      <ol>
+        <li>Definir el objeto de estudio y los objetivos.</li>
+        <li>Variabilizar: llevar cada concepto a algo medible.</li>
+        <li>Definir la población.</li>
+        <li>Armar el marco muestral.</li>
+        <li>Diseñar el instrumento de medición (índices y escalas).</li>
+        <li>Elegir el método de recolección: cara a cara, postal, telefónico u online.</li>
+        <li>Formular el cuestionario.</li>
+        <li>Entrenar a los encuestadores.</li>
+        <li>Hacer una encuesta piloto.</li>
+      </ol>
+    </div>
+    <div>
+      <h4>Propias del muestreo</h4>
+      <ol>
+        <li>Tipo de muestreo: probabilístico o no.</li>
+        <li>Tamaño de la muestra.</li>
+        <li>Nivel de confianza y margen de error.</li>
+        <li>Probabilidad de selección de cada unidad: igual o distinta.</li>
+      </ol>
+    </div>
+    <div>
+      <h4>Posteriores</h4>
+      <ol>
+        <li>Codificar y digitalizar: cerrar preguntas abiertas y armar la base.</li>
+        <li>Depurar la base: errores de rango y de consistencia.</li>
+        <li>Tratar la no respuesta.</li>
+        <li>Ponderar (pesos para corregir sub o sobrerrepresentación) y elevar (llevar los resultados a la población).</li>
+      </ol>
+    </div>
+  </div>
+
+  <h3>Representatividad</h3>
+  <div class="prose">
+    <p>Una muestra es <strong>representativa</strong> cuando reproduce a escala a la población, por ejemplo la distribución de variables sociodemográficas. El azar no la garantiza, pero al sumar elementos elegidos al azar y de forma independiente los sesgos se reducen. Por eso el azar es la base de la inferencia.</p>
+  </div>
+</section>
+
+<!-- ============================ 03 DISTRIBUCIÓN MUESTRAL ============================ -->
+<section class="clase" id="distribucion">
+  <header class="clase-head">
+    <p class="eyebrow">Unidad 1 · Clase 1.03</p>
+    <h2><span class="num">03.</span>Distribución muestral</h2>
+  </header>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>Parámetro</h4>
+      <p>Característica medible de la <strong>población</strong>. Es una <strong>constante</strong>, casi siempre desconocida: justamente lo que se quiere estimar.</p>
+      <p>Ej.: promedio, total, proporción, cantidad de casos favorables.</p>
+    </div>
+    <div class="card">
+      <h4>Estimador (estadístico)</h4>
+      <p>Fórmula que se calcula con los datos de la <strong>muestra</strong> para estimar el parámetro. Es una <strong>variable aleatoria</strong>: cambia de muestra en muestra. Por eso va acompañado de su error estándar.</p>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th></th><th>Población · letras griegas</th><th>Muestra · letras latinas</th></tr></thead>
+      <tbody>
+        <tr><th>Tamaño</th><td class="num-col">N</td><td class="num-col">n</td></tr>
+        <tr><th>Media</th><td class="num-col">μ</td><td class="num-col">x̄</td></tr>
+        <tr><th>Varianza</th><td class="num-col">σ²</td><td class="num-col">s²</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Distribución muestral de la media</h3>
+  <div class="prose">
+    <p>Es la distribución de probabilidad de x̄ considerando <strong>todas las muestras posibles</strong> de tamaño n. Sin reposición hay <math><mrow><mo>(</mo><mfrac linethickness="0"><mi>N</mi><mi>n</mi></mfrac><mo>)</mo></mrow></math> muestras posibles.</p>
+    <p><strong>Teorema del límite central</strong> (Laplace, Liapunov): si la muestra es grande (por convención n &gt; 30), x̄ se distribuye normal <strong>sea cual sea</strong> la distribución de la variable, centrada en μ y con desvío σ/√n.</p>
+  </div>
+  <div class="formula">
+    <math display="block"><mi class="xbar">x̄</mi><mo>∼</mo><mi>N</mi><mrow><mo>(</mo><mi>μ</mi><mo>,</mo><mfrac><mi>σ</mi><msqrt><mi>n</mi></msqrt></mfrac><mo>)</mo></mrow></math>
+    <span class="cap">σ/√n es el <strong>error estándar</strong> (o error típico): cuánto varía x̄ de una muestra a otra.</span>
+  </div>
+
+  <figure class="widget" id="w-tlc">
+    <figcaption class="w-head">
+      <span class="tag">Interactivo</span>
+      <h4>De cualquier forma a una campana</h4>
+      <p>Una población con valores del 1 al 5. Elegí su forma y subí n: la distribución exacta de x̄ se acerca a la normal y se angosta.</p>
+    </figcaption>
+    <div class="controls">
+      <fieldset class="seg" id="tlc-pop">
+        <legend>Población</legend>
+        <input type="radio" name="tlc-pop" id="tlc-uni" value="uni" checked><label for="tlc-uni">Uniforme</label>
+        <input type="radio" name="tlc-pop" id="tlc-asim" value="asim"><label for="tlc-asim">Asimétrica</label>
+        <input type="radio" name="tlc-pop" id="tlc-bim" value="bim"><label for="tlc-bim">Bimodal</label>
+      </fieldset>
+      <div class="ctl grow">
+        <label for="tlc-n">Tamaño de muestra n = <output id="tlc-n-out" for="tlc-n">2</output></label>
+        <input type="range" id="tlc-n" min="1" max="30" step="1" value="2">
+      </div>
+    </div>
+    <div class="legend">
+      <span><i class="sw s1"></i>Probabilidad exacta de x̄</span>
+      <span><i class="sw line s2"></i>Normal N(μ, σ/√n)</span>
+    </div>
+    <div class="plots split">
+      <div class="plot-wrap"><span class="plot-title">Población</span><div class="plot" id="tlc-p1" data-label="Distribución de la población"></div></div>
+      <div class="plot-wrap"><span class="plot-title">Distribución muestral de x̄</span><div class="plot" id="tlc-p2" data-label="Distribución muestral de la media"></div></div>
+    </div>
+    <div class="readout" aria-live="polite"></div>
+  </figure>
+  <p class="note"><span class="tag">Tabla 1 del módulo</span>Con la población uniforme y n = 2 aparecen exactamente sus valores: 25 muestras (con reposición) y probabilidades 1/25, 2/25, …, 5/25, …, 1/25. En el módulo, la de x̄ = 4,5 figura como 2/35; es 2/25.</p>
+</section>
+
+<!-- ============================ 04 ESTIMACIÓN ============================ -->
+<section class="clase" id="estimacion">
+  <header class="clase-head">
+    <p class="eyebrow">Unidad 1 · Clase 1.04</p>
+    <h2><span class="num">04.</span>Estimación</h2>
+  </header>
+
+  <dl class="defs wide">
+    <div><dt>Nivel de confianza</dt><dd><span class="mono">NC = 1 − α</span>. Probabilidad de que la estimación sea correcta, es decir, de que el intervalo contenga el valor real. Es el área central bajo la normal, entre −z y +z.</dd></div>
+    <div><dt>Significación α</dt><dd>Probabilidad de error de la estimación: las dos colas, α/2 de cada lado.</dd></div>
+    <div><dt>Valor z</dt><dd>Cuántos desvíos estándar se aleja un valor de la media.</dd></div>
+  </dl>
+  <div class="formula">
+    <math display="block"><mi>z</mi><mo>=</mo><mfrac><mrow><mi>x</mi><mo>−</mo><mi>μ</mi></mrow><mi>σ</mi></mfrac></math>
+    <span class="cap">Valores de z más usados: <span class="mono">90 % → 1,645 · 95 % → 1,960 · 99 % → 2,576</span></span>
+  </div>
+
+  <h3>Error inferencial e intervalo de confianza</h3>
+  <div class="formulas">
+    <div class="formula">
+      <math display="block"><mi>e</mi><mo>=</mo><mi>z</mi><mfrac><mi>σ</mi><msqrt><mi>n</mi></msqrt></mfrac></math>
+      <span class="cap">Error inferencial: depende del error estándar y del nivel de confianza.</span>
+    </div>
+    <div class="formula">
+      <math display="block"><mi>μ</mi><mo>=</mo><mi class="xbar">x̄</mi><mo>±</mo><mi>z</mi><mfrac><mi>σ</mi><msqrt><mi>n</mi></msqrt></mfrac></math>
+      <span class="cap">σ conocida. Si σ es desconocida se usa s, el desvío de la muestra.</span>
+    </div>
+  </div>
+  <p class="note"><span class="tag">Errata</span>En el módulo, la fórmula con σ desconocida muestra un 8 en el numerador; es s. Con muestras chicas y σ desconocida lo correcto es usar t de Student en lugar de z.</p>
+
+  <figure class="widget" id="w-ic">
+    <figcaption class="w-head">
+      <span class="tag">Interactivo</span>
+      <h4>Intervalo de confianza para la media</h4>
+      <p>Cambiá el nivel de confianza: más confianza da un intervalo más ancho.</p>
+    </figcaption>
+    <div class="controls">
+      <div class="ctl"><label for="ic-x">x̄</label><input type="number" id="ic-x" value="5050" step="any"></div>
+      <div class="ctl"><label for="ic-s">σ (o s)</label><input type="number" id="ic-s" value="150" step="any" min="0"></div>
+      <div class="ctl"><label for="ic-n">n</label><input type="number" id="ic-n" value="20" step="1" min="1"></div>
+      <div class="ctl grow">
+        <label for="ic-nc">Nivel de confianza <output id="ic-nc-out" for="ic-nc">95 %</output></label>
+        <input type="range" id="ic-nc" min="80" max="99.9" step="0.1" value="95">
+      </div>
+    </div>
+    <div class="presets">
+      <span class="lab">Ejemplos</span>
+      <button class="btn" type="button" data-ic="5050,150,20,95">Sacos de arroz</button>
+      <button class="btn" type="button" data-ic="25,5,400,95">Horas de estudio</button>
+    </div>
+    <div class="plot" data-label="Curva normal con el intervalo de confianza sombreado"></div>
+    <div class="readout" aria-live="polite"></div>
+  </figure>
+
+  <div class="example">
+    <span class="tag">Ejemplo · sacos de arroz</span>
+    <p>Pesos normales con σ = 150 g. En una muestra de n = 20 bolsas, x̄ = 5.050 g. Intervalo con α = 5 %.</p>
+    <p class="mono">z = 1,96 · e = 1,96 · 150/√20 = 65,74 g</p>
+    <p class="res">Con 95 % de confianza, el peso medio del lote está entre 4.984,26 g y 5.115,74 g.</p>
+    <p class="note"><span class="tag">Errata</span>La interpretación del módulo dice 4.948,24 g y 5.151,76 g. Con estos datos el intervalo es el que imprime su propio código: (4.984,26; 5.115,74).</p>
+  </div>
+<pre><span class="k">from</span> scipy <span class="k">import</span> stats
+z = stats.norm.ppf(<span class="k">1</span> - alpha/<span class="k">2</span>)      <span class="c"># 1.96 para alpha = 0.05</span>
+e = z * sigma / np.sqrt(n)
+ic = (x_bar - e, x_bar + e)</pre>
+
+  <h3>Tamaño de la muestra</h3>
+  <div class="prose"><p>Se despeja n de la fórmula del error inferencial: primero se fija qué error se tolera y con qué confianza.</p></div>
+  <div class="formulas">
+    <div class="formula">
+      <math display="block"><mi>n</mi><mo>=</mo><msup><mrow><mo>(</mo><mfrac><mrow><mi>z</mi><mi>σ</mi></mrow><mi>e</mi></mfrac><mo>)</mo></mrow><mn>2</mn></msup></math>
+      <span class="cap">Variable cuantitativa, población infinita.</span>
+    </div>
+    <div class="formula">
+      <math display="block"><mi>n</mi><mo>=</mo><mfrac><mrow><msup><mi>z</mi><mn>2</mn></msup><msup><mi>σ</mi><mn>2</mn></msup><mi>N</mi></mrow><mrow><msup><mi>z</mi><mn>2</mn></msup><msup><mi>σ</mi><mn>2</mn></msup><mo>+</mo><msup><mi>e</mi><mn>2</mn></msup><mo>(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo>)</mo></mrow></mfrac></math>
+      <span class="cap">Población finita de tamaño N. Con σ desconocida se usa s² en su lugar.</span>
+    </div>
+    <div class="formula">
+      <math display="block"><mi>n</mi><mo>=</mo><mfrac><mrow><msup><mi>z</mi><mn>2</mn></msup><mi>p</mi><mi>q</mi></mrow><msup><mi>e</mi><mn>2</mn></msup></mfrac></math>
+      <span class="cap">Para una proporción p, con q = 1 − p (población infinita). Hace falta para el ejercicio 2.</span>
+    </div>
+  </div>
+  <p class="note"><span class="tag">Redondeo</span>n se redondea siempre hacia arriba: con un caso menos, el error pasaría el límite. El módulo usa <code>round()</code> y en el ejemplo del teletrabajo da 60; el cálculo exacto es 60,01, así que corresponden 61.</p>
+
+  <figure class="widget" id="w-n">
+    <figcaption class="w-head">
+      <span class="tag">Interactivo</span>
+      <h4>Calculadora de tamaño de muestra</h4>
+      <p>La curva muestra cuántos casos harían falta para cada margen de error: pedir la mitad de error cuesta cuatro veces más casos.</p>
+    </figcaption>
+    <div class="controls">
+      <fieldset class="seg" id="n-mode">
+        <legend>Estimar</legend>
+        <input type="radio" name="n-mode" id="n-media" value="media" checked><label for="n-media">Media</label>
+        <input type="radio" name="n-mode" id="n-prop" value="prop"><label for="n-prop">Proporción</label>
+      </fieldset>
+      <div class="ctl" id="n-s-box"><label for="n-s">σ</label><input type="number" id="n-s" value="100" step="any" min="0"></div>
+      <div class="ctl" id="n-p-box" hidden><label for="n-p">p</label><input type="number" id="n-p" value="0.15" step="0.01" min="0" max="1"></div>
+      <div class="ctl"><label for="n-e">Error e</label><input type="number" id="n-e" value="20" step="any" min="0"></div>
+      <div class="ctl"><label for="n-N">N (vacío = infinita)</label><input type="number" id="n-N" value="" step="1" min="2" placeholder="∞"></div>
+      <div class="ctl grow">
+        <label for="n-nc">Nivel de confianza <output id="n-nc-out" for="n-nc">99 %</output></label>
+        <input type="range" id="n-nc" min="80" max="99.9" step="0.1" value="99">
+      </div>
+    </div>
+    <div class="presets">
+      <span class="lab">Ejemplos</span>
+      <button class="btn" type="button" data-n="media,100,,20,,99">Baterías</button>
+      <button class="btn" type="button" data-n="media,0.8,,0.2,2500,95">Teletrabajo</button>
+      <button class="btn" type="button" data-n="media,3,,0.5,5000,95">Ejercicio 1</button>
+      <button class="btn" type="button" data-n="prop,,0.15,0.03,,99">Ejercicio 2</button>
+    </div>
+    <div class="plot" data-label="Tamaño de muestra necesario según el margen de error"></div>
+    <div class="readout" aria-live="polite"></div>
+  </figure>
+
+  <div class="example">
+    <span class="tag">Ejercicios del módulo</span>
+    <p>1) Libros leídos por año en una ciudad de 5000 habitantes: σ = 3, e = 0,5, 95 %. 2) Proporción que prefiere música clásica en un país muy grande: p ≈ 0,15, e = 0,03, 99 %. 3) 400 estudiantes: x̄ = 25 h, s = 5 h. Intervalo del 95 % para la media.</p>
+    <details class="sol">
+      <summary>Ver soluciones</summary>
+      <ol>
+        <li><p>Población finita: n = 1,96² · 3² · 5000 / (1,96² · 3² + 0,5² · 4999) = 134,6 → <strong>135 personas</strong>.</p></li>
+        <li><p>Proporción: n = 2,576² · 0,15 · 0,85 / 0,03² = 939,9 → <strong>940 personas</strong>.</p></li>
+        <li><p>e = 1,96 · 5/√400 = 0,49 → <strong>[24,51 h; 25,49 h]</strong>.</p></li>
+      </ol>
+    </details>
+  </div>
+</section>
+
+<!-- ============================ 05 TIPOS DE MUESTREO ============================ -->
+<section class="clase" id="tipos">
+  <header class="clase-head">
+    <p class="eyebrow">Unidad 2 · Clase 2.05</p>
+    <h2><span class="num">05.</span>Tipos de muestreo</h2>
+  </header>
+
+  <div class="prose">
+    <p>En un muestreo <strong>probabilístico</strong> la selección es al azar y se conoce la probabilidad que tiene cada elemento de entrar en la muestra. Esas probabilidades se tienen en cuenta al estimar. En uno <strong>no probabilístico</strong> la elección depende del criterio del investigador.</p>
+  </div>
+
+  <figure class="widget" id="w-tipos">
+    <figcaption class="w-head">
+      <span class="tag">Interactivo</span>
+      <h4>Cinco formas de elegir 20 personas entre 200</h4>
+      <p>En esta población de ejemplo hay 55 % de mujeres, pero no están repartidas de forma pareja: se concentran hacia un extremo del mapa. Los recuadros son manzanas de 10 personas.</p>
+    </figcaption>
+    <div class="controls">
+      <fieldset class="seg" id="tp-method">
+        <legend>Método</legend>
+        <input type="radio" name="tp" id="tp-simple" value="simple" checked><label for="tp-simple">Aleatorio simple</label>
+        <input type="radio" name="tp" id="tp-sist" value="sist"><label for="tp-sist">Sistemático</label>
+        <input type="radio" name="tp" id="tp-estr" value="estr"><label for="tp-estr">Estratificado</label>
+        <input type="radio" name="tp" id="tp-cong" value="cong"><label for="tp-cong">Conglomerados</label>
+        <input type="radio" name="tp" id="tp-acc" value="acc"><label for="tp-acc">Accidental</label>
+      </fieldset>
+      <button class="btn" type="button" id="tp-redo">Sortear otra vez</button>
+    </div>
+    <div class="legend">
+      <span><i class="sw dot s1"></i>Mujer</span>
+      <span><i class="sw dot s2"></i>Hombre</span>
+      <span><i class="sw ring" style="border-color: var(--muted)"></i>No elegida</span>
+    </div>
+    <div class="plot" data-label="Población de 200 personas y la muestra elegida"></div>
+    <div class="readout" aria-live="polite"></div>
+  </figure>
+
+  <h3>Probabilísticos</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4>Aleatorio simple</h4>
+      <p>Todas las muestras de tamaño n tienen la misma probabilidad. Cada elemento entra con probabilidad n/N.</p>
+      <div class="formula"><math><mi>P</mi><mo>(</mo><mtext>muestra</mtext><mo>)</mo><mo>=</mo><mfrac><mn>1</mn><mrow><mo>(</mo><mfrac linethickness="0"><mi>N</mi><mi>n</mi></mfrac><mo>)</mo></mrow></mfrac></math></div>
+      <p>En pandas: <code>df.sample(n=35, random_state=101)</code></p>
+    </div>
+    <div class="card">
+      <h4>Sistemático</h4>
+      <p>Se calcula la fracción k = N/n, se sortea el primero y después se toma uno cada k.</p>
+      <p>Ej.: 80 de 1600 → k = 20. Si sale el 143, siguen 163, 183, …</p>
+    </div>
+    <div class="card">
+      <h4>Estratificado</h4>
+      <p>Se divide la población en estratos (edad, sexo, clase social) y se muestrea dentro de cada uno. Proporcional:</p>
+      <div class="formula"><math><msub><mi>n</mi><mi>j</mi></msub><mo>=</mo><mfrac><msub><mi>N</mi><mi>j</mi></msub><mi>N</mi></mfrac><mo>·</mo><mi>n</mi></math></div>
+      <p>Ej.: 68.000 habitantes (37.400 mujeres y 30.600 hombres), n = 1000 → 550 mujeres y 450 hombres.</p>
+    </div>
+    <div class="card">
+      <h4>Por conglomerados</h4>
+      <p>Se sortean grupos enteros: manzanas, hogares, aulas, urnas. Ventaja: no hace falta el listado de todos los elementos. Con varios niveles (municipio → manzana → vivienda) es <strong>polietápico</strong>; si los grupos son zonas geográficas, es muestreo <strong>por áreas</strong>.</p>
+    </div>
+  </div>
+  <p class="note"><span class="tag">Ojo</span>El módulo pide conglomerados homogéneos por dentro y heterogéneos entre sí. En la teoría clásica es al revés: cada conglomerado conviene que sea variado por dentro, como una mini población. Lo homogéneo por dentro es el criterio de los estratos. Si te lo preguntan, aclará qué criterio usás.</p>
+
+  <h3>No probabilísticos</h3>
+  <dl class="defs wide">
+    <div><dt>Por cuotas</dt><dd>Se fija cuántas personas de cada tipo (edad, sexo, nivel socioeconómico) según datos censales o electorales.</dd></div>
+    <div><dt>Accidental</dt><dd>También llamado coincidental. Se encuesta en lugares que elige el investigador: terminales, plazas, salida del súper. Suele combinarse con cuotas.</dd></div>
+    <div><dt>Opinático</dt><dd>Se eligen informantes según la opinión de expertos, o se toma a quienes llaman a una radio o programa.</dd></div>
+    <div><dt>Elección razonada</dt><dd>Criterio lógico y experto sobre la composición del universo. Puede funcionar bien cuando no se pueden armar muestras grandes.</dd></div>
+  </dl>
+  <p class="key">No son representativas en sentido estadístico: agrandar la muestra no mejora su calidad.</p>
+</section>
+
+<!-- ============================ 06 CONTRASTE DE HIPÓTESIS ============================ -->
+<section class="clase" id="hipotesis">
+  <header class="clase-head">
+    <p class="eyebrow">Unidad 2 · Clase 2.06</p>
+    <h2><span class="num">06.</span>Contraste de hipótesis</h2>
+  </header>
+
+  <div class="prose">
+    <p>Es un método para decidir si una hipótesis sobre un parámetro desconocido se <strong>acepta o se rechaza</strong>, con una probabilidad de error α fijada de antemano.</p>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h4>Hipótesis nula · H₀</h4>
+      <p>Lo que se da por verdadero antes del contraste. Lleva <span class="mono">=</span>, <span class="mono">≤</span> o <span class="mono">≥</span>.</p>
+      <p>Ej.: el medicamento no tiene efecto sobre el colesterol, es igual al placebo.</p>
+    </div>
+    <div class="card">
+      <h4>Hipótesis alternativa · H₁</h4>
+      <p>Lo que queremos demostrar. Lleva <span class="mono">≠</span>, <span class="mono">&lt;</span> o <span class="mono">&gt;</span>.</p>
+      <p>Ej.: el medicamento sí reduce el colesterol frente al placebo.</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>Tienen que ser <strong>mutuamente excluyentes</strong> (no pueden ser ciertas a la vez) y <strong>complementarias</strong> (no hay una tercera opción). Comparar así dos versiones de algo se conoce como <strong>A/B testing</strong>.</p>
+  </div>
+
+  <h3>Bootstrap</h3>
+  <div class="prose">
+    <p>Método de <strong>remuestreo no paramétrico</strong>: no supone ninguna distribución para los datos. Solo pide que la muestra sea representativa de la población.</p>
+  </div>
+  <div class="cols3">
+    <div><h4>1 · Remuestrear</h4><p>Sacar muchas muestras del mismo tamaño que la original, <strong>con reemplazo</strong>: un dato puede repetirse o no salir.</p></div>
+    <div><h4>2 · Calcular</h4><p>En cada remuestra, calcular el estadístico que interesa, por ejemplo la media.</p></div>
+    <div><h4>3 · Distribuir</h4><p>Con miles de repeticiones se arma la distribución muestral empírica. Sus percentiles dan el intervalo de confianza.</p></div>
+  </div>
+  <p class="key">Regla de decisión: si el intervalo no contiene el valor de H₀ (acá, 0 = sin efecto), se rechaza H₀.</p>
+
+  <figure class="widget" id="w-boot">
+    <figcaption class="w-head">
+      <span class="tag">Interactivo</span>
+      <h4>Bootstrap del medicamento</h4>
+      <p>150 voluntarios puntúan el efecto de −10 (negativo) a 10 (positivo). Los datos son simulados: elegí el efecto real y mirá si el contraste lo detecta con 10.000 remuestras.</p>
+    </figcaption>
+    <div class="controls">
+      <div class="ctl grow">
+        <label for="bt-eff">Efecto real simulado <output id="bt-eff-out" for="bt-eff"></output></label>
+        <input type="range" id="bt-eff" min="-2" max="2" step="0.25" value="1.5">
+      </div>
+      <div class="ctl grow">
+        <label for="bt-nc">Nivel de confianza <output id="bt-nc-out" for="bt-nc"></output></label>
+        <input type="range" id="bt-nc" min="50" max="99" step="1" value="97">
+      </div>
+      <button class="btn" type="button" id="bt-redo">Otra muestra</button>
+    </div>
+    <div class="plots">
+      <div class="plot-wrap"><span class="plot-title">Muestra original: 150 puntuaciones</span><div class="plot" id="bt-p1" data-label="Histograma de la muestra original"></div></div>
+      <div class="plot-wrap">
+        <span class="plot-title">Medias de 10.000 remuestras</span>
+        <div class="legend">
+          <span><i class="sw s1"></i>Medias bootstrap</span>
+          <span><i class="sw line s2"></i>Límites del intervalo</span>
+          <span><i class="sw line ink"></i>0 = sin efecto (H₀)</span>
+        </div>
+        <div class="plot" id="bt-p2" data-label="Distribución bootstrap de la media con el intervalo de confianza"></div>
+      </div>
+    </div>
+    <div class="readout" aria-live="polite"></div>
+  </figure>
+
+<pre><span class="c"># df_muestra: DataFrame con 150 puntuaciones</span>
+boot_medias = []
+<span class="k">for</span> i <span class="k">in</span> range(<span class="k">10000</span>):
+    boot = df_muestra.sample(<span class="k">150</span>, replace=<span class="k">True</span>)
+    boot_medias.append(boot[<span class="k">'Puntuacion'</span>].mean())
+
+nc = <span class="k">0.97</span>
+inf = np.percentile(boot_medias, (<span class="k">1</span> - nc) / <span class="k">2</span> * <span class="k">100</span>)
+sup = np.percentile(boot_medias, (<span class="k">1</span> + nc) / <span class="k">2</span> * <span class="k">100</span>)</pre>
+</section>
+
+<footer class="colofon">
+  <p>Basado en el módulo digital EED2 del ISSD (autora: Abril Reyna), clases 1.01 a 2.06.</p>
+  <p>Las notas “Errata” y “Ojo” marcan diferencias con el material original.</p>
+</footer>
+
+</div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- utilidades ---------- */
+const NS = 'http://www.w3.org/2000/svg';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const nfCache = {};
+const fmt = (x, d = 2) => {
+  if (!nfCache[d]) nfCache[d] = new Intl.NumberFormat('es-AR', { minimumFractionDigits: d, maximumFractionDigits: d });
+  return nfCache[d].format(x);
+};
+const fmtInt = (x) => fmt(Math.round(x), 0);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+function el(tag, attrs, parent, text) {
+  const e = document.createElementNS(NS, tag);
+  if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+function rng(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function randn(r) {
+  let u = 0, v = 0;
+  while (u === 0) u = r();
+  while (v === 0) v = r();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+function shuffle(arr, r) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(r() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+const SQRT2PI = Math.sqrt(2 * Math.PI);
+const pdf = (z) => Math.exp(-z * z / 2) / SQRT2PI;
+function normInv(p) {
+  const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
+  const b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01];
+  const c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
+  const d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00];
+  const pl = 0.02425;
+  let q, r;
+  if (p < pl) {
+    q = Math.sqrt(-2 * Math.log(p));
+    return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+  }
+  if (p > 1 - pl) {
+    q = Math.sqrt(-2 * Math.log(1 - p));
+    return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+  }
+  q = p - 0.5; r = q * q;
+  return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+}
+const zFor = (nc) => normInv(1 - (1 - nc) / 2);
+const pctTxt = (v) => fmt(v, Number.isInteger(v) ? 0 : 1) + ' %';
+
+function niceStep(range, count) {
+  const raw = range / count;
+  const p = Math.pow(10, Math.floor(Math.log10(raw)));
+  const m = raw / p;
+  return (m < 1.5 ? 1 : m < 3 ? 2 : m < 7 ? 5 : 10) * p;
+}
+function ticks(min, max, count) {
+  if (!(max > min)) return { values: [min], step: 1 };
+  const st = niceStep(max - min, count);
+  const out = [];
+  for (let v = Math.ceil(min / st - 1e-9) * st; v <= max + 1e-9 * st; v += st) out.push(+v.toFixed(10));
+  return { values: out, step: st };
+}
+const decFor = (step) => Math.max(0, -Math.floor(Math.log10(step) + 1e-9));
+
+function barPath(x, y, w, h, r) {
+  if (h <= 0 || w <= 0) return '';
+  r = Math.min(r, w / 2, h);
+  return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
+}
+
+function chart(host, height, draw) {
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('role', 'img');
+  if (host.dataset.label) svg.setAttribute('aria-label', host.dataset.label);
+  host.appendChild(svg);
+  let lastW = -1;
+  const render = () => {
+    const W = Math.max(200, Math.floor(host.clientWidth));
+    const H = typeof height === 'function' ? height(W) : height;
+    lastW = W;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('width', W);
+    svg.setAttribute('height', H);
+    svg.replaceChildren();
+    draw(svg, W, H);
+  };
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(() => { if (Math.floor(host.clientWidth) !== lastW) render(); }).observe(host);
+  }
+  render();
+  return render;
+}
+
+function tooltip(host) {
+  const t = document.createElement('div');
+  t.className = 'tip';
+  t.hidden = true;
+  host.appendChild(t);
+  return {
+    show(html, x, y) {
+      t.innerHTML = html;
+      t.hidden = false;
+      const w = t.offsetWidth, h = t.offsetHeight, W = host.clientWidth;
+      const left = clamp(x - w / 2, 0, Math.max(0, W - w));
+      let top = y - h - 12;
+      if (top < -4) top = y + 14;
+      t.style.left = left + 'px';
+      t.style.top = top + 'px';
+    },
+    hide() { t.hidden = true; }
+  };
+}
+
+/* hover para barras: rects invisibles con tooltip */
+function hoverTarget(g, tip, rect, html, bar) {
+  const h = el('rect', { x: rect.x, y: rect.y, width: Math.max(1, rect.w), height: Math.max(1, rect.h), class: 'v-hit' }, g);
+  const on = () => { if (bar) bar.classList.add('is-hover'); tip.show(html(), rect.x + rect.w / 2, rect.ty != null ? rect.ty : rect.y); };
+  const off = () => { if (bar) bar.classList.remove('is-hover'); tip.hide(); };
+  h.addEventListener('pointerenter', on);
+  h.addEventListener('pointerleave', off);
+  return h;
+}
+
+/* ---------- navegación: clase activa ---------- */
+(function nav() {
+  const links = $$('.classnav a');
+  const map = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) {
+        links.forEach((a) => a.removeAttribute('aria-current'));
+        const a = map.get(en.target.id);
+        if (a) {
+          a.setAttribute('aria-current', 'true');
+          const ol = a.closest('ol');
+          const li = a.parentElement;
+          ol.scrollTo({ left: li.offsetLeft - (ol.clientWidth - li.offsetWidth) / 2 });
+        }
+      }
+    });
+  }, { rootMargin: '-35% 0px -60% 0px' });
+  $$('.clase').forEach((s) => io.observe(s));
+})();
+
+/* ---------- 01 · quiz ---------- */
+(function quiz() {
+  const opts = [['', 'Elegí…'], ['ue', 'Unidad elemental'], ['um', 'Unidad de muestreo'], ['cob', 'Cobertura'], ['per', 'Período']];
+  const names = Object.fromEntries(opts);
+  const sels = $$('#w-quiz select');
+  sels.forEach((s) => {
+    opts.forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; s.appendChild(o); });
+    s.addEventListener('change', () => { const r = s.parentElement.querySelector('.q-res'); r.textContent = ''; r.className = 'q-res'; });
+  });
+  $('#q-check').addEventListener('click', () => {
+    sels.forEach((s) => {
+      const r = s.parentElement.querySelector('.q-res');
+      if (!s.value) { r.className = 'q-res'; r.textContent = 'Falta elegir'; return; }
+      const ok = s.value === s.dataset.ok;
+      r.className = 'q-res ' + (ok ? 'ok' : 'bad');
+      r.textContent = ok ? 'Correcto' : 'Es ' + names[s.dataset.ok].toLowerCase();
+    });
+  });
+})();
+
+/* ---------- 02 · Literary Digest vs Gallup ---------- */
+(function digest() {
+  const root = $('#w-digest');
+  const range = $('#dg-n'), out = $('#dg-n-out');
+  const plot = $('.plot', root), readout = $('.readout', root);
+  const P_REAL = 61, P_BIAS = 43;
+  const r = rng(1936);
+  let z1 = 0, z2 = 0;
+  const redraw = () => { z1 = randn(r); z2 = randn(r); };
+  redraw();
+  const nOf = () => Math.round(Math.pow(10, +range.value));
+  const tip = tooltip(plot);
+
+  const est = () => {
+    const n = nOf();
+    const se = (p) => 100 * Math.sqrt((p / 100) * (1 - p / 100) / n);
+    const seB = se(P_BIAS), seR = se(P_REAL);
+    return {
+      n,
+      bias: { v: P_BIAS + z1 * seB, e: 1.96 * seB },
+      rand: { v: P_REAL + z2 * seR, e: 1.96 * seR }
+    };
+  };
+
+  const render = chart(plot, 180, (svg, W, H) => {
+    const m = { l: 10, r: 14, t: 34, b: 30 };
+    const x0 = 25, x1 = 75;
+    const X = (v) => m.l + (clamp(v, x0, x1) - x0) / (x1 - x0) * (W - m.l - m.r);
+    const base = H - m.b;
+    const g = el('g', null, svg);
+    for (let v = 30; v <= 70; v += 10) {
+      el('line', { x1: X(v), x2: X(v), y1: m.t - 6, y2: base, class: 'v-grid' }, g);
+      el('text', { x: X(v), y: base + 18, 'text-anchor': 'middle' }, g, v + ' %');
+    }
+    el('line', { x1: X(50), x2: X(50), y1: m.t - 10, y2: base, class: 'v-axis' }, g);
+    el('text', { x: X(50) - 6, y: m.t - 16, 'text-anchor': 'end' }, g, '← gana Landon');
+    el('text', { x: X(50) + 6, y: m.t - 16 }, g, 'gana Roosevelt →');
+    el('line', { x1: X(P_REAL), x2: X(P_REAL), y1: m.t - 6, y2: base, class: 'v-ref' }, g);
+    el('text', { x: X(P_REAL) + 6, y: base - 6, class: 'v-lbl halo' }, g, 'Real ≈ 61 %');
+
+    const s = est();
+    const narrow = W < 520;
+    const rows = [
+      { y: m.t + 30, d: s.bias, cls: 2, name: narrow ? 'Sesgada (Digest)' : 'Muestra sesgada (listas del Digest)' },
+      { y: m.t + 82, d: s.rand, cls: 1, name: narrow ? 'Aleatoria (Gallup)' : 'Muestra aleatoria (método de Gallup)' }
+    ];
+    rows.forEach((row) => {
+      el('text', { x: m.l, y: row.y - 17, class: 'v-lbl halo' }, g, row.name);
+      const a = X(row.d.v - row.d.e), b = X(row.d.v + row.d.e);
+      el('line', { x1: a, x2: b, y1: row.y, y2: row.y, class: 'v-l' + row.cls }, g);
+      if (b - a > 6) {
+        el('line', { x1: a, x2: a, y1: row.y - 5, y2: row.y + 5, class: 'v-l' + row.cls }, g);
+        el('line', { x1: b, x2: b, y1: row.y - 5, y2: row.y + 5, class: 'v-l' + row.cls }, g);
+      }
+      el('circle', { cx: X(row.d.v), cy: row.y, r: 6, class: 'v-f' + row.cls + ' v-ring' }, g);
+      const hit = el('circle', { cx: X(row.d.v), cy: row.y, r: 16, class: 'v-hit' }, g);
+      hit.addEventListener('pointerenter', () => tip.show(`${fmt(row.d.v, 1)} % ± ${fmt(row.d.e, 1)}`, X(row.d.v), row.y - 8));
+      hit.addEventListener('pointerleave', () => tip.hide());
+    });
+
+    out.textContent = '= ' + fmtInt(s.n);
+    const line = (d, cls, name) => {
+      const wins = d.v >= 50 ? 'Roosevelt' : 'Landon';
+      return `<div><i class="sw dot s${cls}"></i> ${name}: <b>${fmt(d.v, 1)} %</b> ± ${fmt(d.e, 1)} → predice que gana <b>${wins}</b></div>`;
+    };
+    readout.innerHTML = line(s.bias, 2, 'Sesgada') + line(s.rand, 1, 'Aleatoria');
+  });
+
+  range.addEventListener('input', render);
+  $$('[data-n]', root).forEach((b) => b.addEventListener('click', () => { range.value = Math.log10(+b.dataset.n); render(); }));
+  $('#dg-redo').addEventListener('click', () => { redraw(); render(); });
+})();
+
+/* ---------- 03 · Teorema del límite central ---------- */
+(function tlc() {
+  const root = $('#w-tlc');
+  const range = $('#tlc-n'), out = $('#tlc-n-out'), readout = $('.readout', root);
+  const POPS = { uni: [1, 1, 1, 1, 1], asim: [8, 4, 2, 1, 1], bim: [5, 1, 0, 1, 5] };
+  let popKey = 'uni';
+  const tip1 = tooltip($('#tlc-p1')), tip2 = tooltip($('#tlc-p2'));
+
+  const state = () => {
+    const w = POPS[popKey];
+    const tot = w.reduce((a, b) => a + b, 0);
+    const p = w.map((x) => x / tot);
+    const mu = p.reduce((a, pi, i) => a + pi * (i + 1), 0);
+    const sd = Math.sqrt(p.reduce((a, pi, i) => a + pi * (i + 1 - mu) ** 2, 0));
+    const n = +range.value;
+    let dist = [1];
+    for (let k = 0; k < n; k++) {
+      const next = new Array(dist.length + 4).fill(0);
+      for (let i = 0; i < dist.length; i++) for (let j = 0; j < 5; j++) next[i + j] += dist[i] * p[j];
+      dist = next;
+    }
+    return { p, mu, sd, n, dist };
+  };
+
+  const yAxis = (g, m, W, Y, t, dec) => {
+    t.values.forEach((v) => {
+      el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: 'v-grid' }, g);
+      el('text', { x: m.l - 6, y: Y(v) + 4, 'text-anchor': 'end' }, g, fmt(v, dec));
+    });
+  };
+
+  const r1 = chart($('#tlc-p1'), 190, (svg, W, H) => {
+    const s = state();
+    const m = { l: 40, r: 8, t: 10, b: 26 };
+    const base = H - m.b;
+    const t = ticks(0, Math.max(...s.p) * 1.1, 3);
+    const ymax = Math.max(t.values[t.values.length - 1], Math.max(...s.p) * 1.1);
+    const Y = (v) => base - v / ymax * (base - m.t);
+    const g = el('g', null, svg);
+    yAxis(g, m, W, Y, t, 2);
+    const band = (W - m.l - m.r) / 5;
+    const bw = Math.min(24, band * 0.6);
+    s.p.forEach((pi, i) => {
+      const cx = m.l + band * (i + 0.5);
+      const bar = el('path', { d: barPath(cx - bw / 2, Y(pi), bw, base - Y(pi), 4), class: 'v-f1 v-bar' }, g);
+      el('text', { x: cx, y: base + 17, 'text-anchor': 'middle' }, g, String(i + 1));
+      hoverTarget(g, tip1, { x: cx - band / 2, y: m.t, w: band, h: base - m.t, ty: Y(pi) }, () => `valor ${i + 1} · P = ${fmt(pi, 3)}`, bar);
+    });
+    el('line', { x1: m.l, x2: W - m.r, y1: base, y2: base, class: 'v-axis' }, g);
+  });
+
+  const r2 = chart($('#tlc-p2'), 190, (svg, W, H) => {
+    const s = state();
+    const m = { l: 44, r: 10, t: 10, b: 26 };
+    const base = H - m.b;
+    const X = (v) => m.l + (v - 0.8) / 4.4 * (W - m.l - m.r);
+    const se = s.sd / Math.sqrt(s.n);
+    const curve = (x) => pdf((x - s.mu) / se) / se / s.n;
+    const pmax = Math.max(...s.dist, curve(s.mu));
+    const t = ticks(0, pmax * 1.08, 4);
+    const ymax = Math.max(t.values[t.values.length - 1], pmax * 1.08);
+    const Y = (v) => base - v / ymax * (base - m.t);
+    const g = el('g', null, svg);
+    yAxis(g, m, W, Y, t, decFor(t.step));
+    const sp = X(1 + 1 / s.n) - X(1);
+    const bw = clamp(sp - 2, 1, 24);
+    const total = Math.pow(5, s.n);
+    s.dist.forEach((pk, k) => {
+      const v = (s.n + k) / s.n;
+      const cx = X(v);
+      if (pk > 0) {
+        const bar = el('path', { d: barPath(cx - bw / 2, Y(pk), bw, base - Y(pk), Math.min(4, bw / 2)), class: 'v-f1 v-bar' }, g);
+        hoverTarget(g, tip2, { x: cx - sp / 2, y: m.t, w: sp, h: base - m.t, ty: Y(pk) }, () => {
+          let txt = `x̄ = ${fmt(v, 2)} · P = ${fmt(pk, 4)}`;
+          if (popKey === 'uni' && s.n <= 4) txt += ` (${Math.round(pk * total)}/${fmtInt(total)})`;
+          return txt;
+        }, bar);
+      }
+    });
+    let d = '';
+    for (let i = 0; i <= 220; i++) {
+      const x = 0.8 + 4.4 * i / 220;
+      d += (i ? 'L' : 'M') + X(x).toFixed(1) + ',' + Y(curve(x)).toFixed(1);
+    }
+    el('path', { d, class: 'v-l2' }, g);
+    for (let v = 1; v <= 5; v++) el('text', { x: X(v), y: base + 17, 'text-anchor': 'middle' }, g, String(v));
+    el('line', { x1: m.l, x2: W - m.r, y1: base, y2: base, class: 'v-axis' }, g);
+  });
+
+  const update = () => {
+    r1(); r2();
+    const s = state();
+    out.textContent = s.n;
+    const total = s.n <= 8 ? fmtInt(Math.pow(5, s.n)) : (() => {
+      const e = Math.floor(s.n * Math.log10(5));
+      const mant = Math.pow(10, s.n * Math.log10(5) - e);
+      const sup = String(e).replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+      return `${fmt(mant, 1)} × 10${sup}`;
+    })();
+    readout.innerHTML = `<div class="stats"><span>μ = <b>${fmt(s.mu, 2)}</b></span><span>σ = <b>${fmt(s.sd, 2)}</b></span><span>error estándar σ/√n = <b>${fmt(s.sd / Math.sqrt(s.n), 3)}</b></span><span>muestras posibles 5ⁿ = <b>${total}</b></span></div>`;
+  };
+  range.addEventListener('input', update);
+  $$('input[name="tlc-pop"]').forEach((i) => i.addEventListener('change', () => { popKey = i.value; update(); }));
+  update();
+})();
+
+/* ---------- 04 · Intervalo de confianza ---------- */
+(function ic() {
+  const root = $('#w-ic');
+  const ix = $('#ic-x'), is = $('#ic-s'), inn = $('#ic-n'), inc = $('#ic-nc'), out = $('#ic-nc-out');
+  const plot = $('.plot', root), readout = $('.readout', root);
+  const tip = tooltip(plot);
+
+  const state = () => {
+    const x = +ix.value, s = +is.value, n = +inn.value, ncPct = +inc.value, nc = ncPct / 100;
+    const ok = isFinite(x) && ix.value !== '' && s > 0 && n >= 1;
+    const z = zFor(nc), se = s / Math.sqrt(n), e = z * se;
+    return { ok, x, s, n, nc, ncPct, z, se, e, lo: x - e, hi: x + e };
+  };
+  const decs = (st) => (st.se < 0.05 ? 4 : 2);
+
+  const render = chart(plot, 230, (svg, W, H) => {
+    const st = state();
+    out.textContent = pctTxt(st.ncPct);
+    if (!st.ok) {
+      readout.innerHTML = '<div>Revisá los datos: σ y n tienen que ser mayores que 0.</div>';
+      return;
+    }
+    const m = { l: 12, r: 12, t: 30, b: 40 };
+    const base = H - m.b;
+    const X = (z) => m.l + (z + 4) / 8 * (W - m.l - m.r);
+    const Y = (p) => base - p / 0.42 * (base - m.t);
+    const g = el('g', null, svg);
+    const area = (a, b) => {
+      let d = `M${X(a)},${base}`;
+      const steps = 80;
+      for (let i = 0; i <= steps; i++) { const z = a + (b - a) * i / steps; d += `L${X(z).toFixed(1)},${Y(pdf(z)).toFixed(1)}`; }
+      return d + `L${X(b)},${base}Z`;
+    };
+    const zc = st.z;
+    el('path', { d: area(-4, -zc), class: 'v-wash0' }, g);
+    el('path', { d: area(zc, 4), class: 'v-wash0' }, g);
+    el('path', { d: area(-zc, zc), class: 'v-wash1' }, g);
+    let d = '';
+    for (let i = 0; i <= 200; i++) { const z = -4 + 8 * i / 200; d += (i ? 'L' : 'M') + X(z).toFixed(1) + ',' + Y(pdf(z)).toFixed(1); }
+    el('path', { d, class: 'v-l1' }, g);
+    for (let z = -3; z <= 3; z++) {
+      el('line', { x1: X(z), x2: X(z), y1: base, y2: base + 4, class: 'v-axis' }, g);
+      el('text', { x: X(z), y: base + 16, 'text-anchor': 'middle' }, g, z === 0 ? '0' : (z > 0 ? '+' : '−') + Math.abs(z));
+    }
+    el('text', { x: X(0), y: base + 32, 'text-anchor': 'middle' }, g, 'z (desvíos estándar de x̄)');
+    el('line', { x1: m.l, x2: W - m.r, y1: base, y2: base, class: 'v-axis' }, g);
+    const dd = decs(st);
+    [-zc, zc].forEach((z, i) => {
+      el('line', { x1: X(z), x2: X(z), y1: m.t - 6, y2: base, class: 'v-l1' }, g);
+      el('text', { x: X(z), y: m.t - 12, 'text-anchor': 'middle', class: 'v-strong halo' }, g, fmt(i ? st.hi : st.lo, dd));
+    });
+    el('line', { x1: X(0), x2: X(0), y1: Y(pdf(0)), y2: base, class: 'v-grid' }, g);
+    el('text', { x: X(0), y: Y(0.2), 'text-anchor': 'middle', class: 'v-strong halo' }, g, `NC = ${pctTxt(st.ncPct)}`);
+    el('text', { x: X(0), y: Y(0.2) + 16, 'text-anchor': 'middle', class: 'v-lbl halo' }, g, `x̄ = ${fmt(st.x, dd)}`);
+    const tail = (100 - st.ncPct) / 2;
+    const tailPct = fmt(tail, Math.abs(tail * 10 - Math.round(tail * 10)) < 1e-9 ? 1 : 2) + ' %';
+    [-1, 1].forEach((sgn) => {
+      const zx = sgn * (zc + 4) / 2;
+      el('text', { x: X(zx), y: base - 26, 'text-anchor': 'middle', class: 'v-lbl halo' }, g, 'α/2');
+      el('text', { x: X(zx), y: base - 12, 'text-anchor': 'middle', class: 'halo' }, g, tailPct);
+    });
+    // crosshair
+    const cross = el('line', { x1: 0, x2: 0, y1: m.t, y2: base, class: 'v-cross', visibility: 'hidden' }, g);
+    const hit = el('rect', { x: m.l, y: m.t, width: W - m.l - m.r, height: base - m.t, class: 'v-hit' }, g);
+    hit.addEventListener('pointermove', (ev) => {
+      const rect = svg.getBoundingClientRect();
+      const px = ev.clientX - rect.left;
+      const z = clamp((px - m.l) / (W - m.l - m.r) * 8 - 4, -4, 4);
+      cross.setAttribute('x1', X(z)); cross.setAttribute('x2', X(z)); cross.setAttribute('visibility', 'visible');
+      tip.show(`z = ${fmt(z, 2)} · x̄ = ${fmt(st.x + z * st.se, dd)}`, X(z), Y(pdf(z)));
+    });
+    hit.addEventListener('pointerleave', () => { cross.setAttribute('visibility', 'hidden'); tip.hide(); });
+
+    readout.innerHTML = `<div class="stats"><span>z = <b>${fmt(st.z, 3)}</b></span><span>σ/√n = <b>${fmt(st.se, dd)}</b></span><span>e = z·σ/√n = <b>${fmt(st.e, dd)}</b></span></div>
+      <div class="big">μ está entre <b>${fmt(st.lo, dd)}</b> y <b>${fmt(st.hi, dd)}</b> con ${pctTxt(st.ncPct)} de confianza.</div>`;
+  });
+
+  [ix, is, inn, inc].forEach((i) => i.addEventListener('input', render));
+  $$('[data-ic]', root).forEach((b) => b.addEventListener('click', () => {
+    const [x, s, n, nc] = b.dataset.ic.split(',');
+    ix.value = x; is.value = s; inn.value = n; inc.value = nc; render();
+  }));
+})();
+
+/* ---------- 04 · Tamaño de muestra ---------- */
+(function sampleSize() {
+  const root = $('#w-n');
+  const iS = $('#n-s'), iP = $('#n-p'), iE = $('#n-e'), iN = $('#n-N'), iNC = $('#n-nc'), out = $('#n-nc-out');
+  const plot = $('.plot', root), readout = $('.readout', root);
+  const tip = tooltip(plot);
+  let mode = 'media';
+
+  const state = () => {
+    const nc = +iNC.value / 100, z = zFor(nc);
+    const e = +iE.value;
+    const N = iN.value === '' ? Infinity : +iN.value;
+    let v, ok;
+    if (mode === 'media') { const s = +iS.value; v = s * s; ok = s > 0; }
+    else { const p = +iP.value; v = p * (1 - p); ok = p > 0 && p < 1; }
+    ok = ok && e > 0 && (N === Infinity || N >= 2);
+    const nOf = (ee) => {
+      const n0 = z * z * v / (ee * ee);
+      return N === Infinity ? n0 : (z * z * v * N) / (z * z * v + ee * ee * (N - 1));
+    };
+    return { nc, z, e, N, v, ok, nOf };
+  };
+
+  const render = chart(plot, 240, (svg, W, H) => {
+    const st = state();
+    out.textContent = pctTxt(+iNC.value);
+    if (!st.ok) {
+      readout.innerHTML = '<div>Revisá los datos: el error y el desvío tienen que ser mayores que 0, p entre 0 y 1, y N al menos 2.</div>';
+      return;
+    }
+    const m = { l: 56, r: 18, t: 16, b: 42 };
+    const base = H - m.b;
+    const e0 = st.e * 0.4, e1 = st.e * 2.5;
+    const X = (e) => m.l + (e - e0) / (e1 - e0) * (W - m.l - m.r);
+    const nMax = st.nOf(e0) * 1.05;
+    const ty = ticks(0, nMax, 4);
+    const yTop = Math.max(nMax, ty.values[ty.values.length - 1]);
+    const Y = (n) => base - n / yTop * (base - m.t);
+    const g = el('g', null, svg);
+    ty.values.forEach((v) => {
+      el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: 'v-grid' }, g);
+      el('text', { x: m.l - 6, y: Y(v) + 4, 'text-anchor': 'end' }, g, fmt(v, decFor(ty.step)));
+    });
+    const tx = ticks(e0, e1, Math.max(3, Math.floor((W - m.l - m.r) / 70)));
+    const dx = decFor(tx.step);
+    tx.values.forEach((v) => {
+      el('line', { x1: X(v), x2: X(v), y1: base, y2: base + 4, class: 'v-axis' }, g);
+      el('text', { x: X(v), y: base + 16, 'text-anchor': 'middle' }, g, fmt(v, dx));
+    });
+    el('text', { x: (m.l + W - m.r) / 2, y: base + 34, 'text-anchor': 'middle' }, g, 'margen de error e');
+    el('line', { x1: m.l, x2: W - m.r, y1: base, y2: base, class: 'v-axis' }, g);
+    let d = '';
+    for (let i = 0; i <= 160; i++) {
+      const e = e0 + (e1 - e0) * i / 160;
+      d += (i ? 'L' : 'M') + X(e).toFixed(1) + ',' + Y(st.nOf(e)).toFixed(1);
+    }
+    el('path', { d, class: 'v-l1' }, g);
+    const nNow = st.nOf(st.e);
+    const px = X(st.e), py = Y(nNow);
+    el('line', { x1: px, x2: px, y1: py, y2: base, class: 'v-grid' }, g);
+    el('circle', { cx: px, cy: py, r: 5, class: 'v-f1 v-ring' }, g);
+    el('text', { x: px + 10, y: py - 10, class: 'v-strong halo' }, g, 'n = ' + fmtInt(Math.ceil(nNow - 1e-9)));
+
+    const cross = el('line', { x1: 0, x2: 0, y1: m.t, y2: base, class: 'v-cross', visibility: 'hidden' }, g);
+    const dot = el('circle', { cx: 0, cy: 0, r: 4, class: 'v-f1 v-ring', visibility: 'hidden' }, g);
+    const hit = el('rect', { x: m.l, y: m.t, width: W - m.l - m.r, height: base - m.t, class: 'v-hit' }, g);
+    hit.addEventListener('pointermove', (ev) => {
+      const rect = svg.getBoundingClientRect();
+      const e = clamp(e0 + (ev.clientX - rect.left - m.l) / (W - m.l - m.r) * (e1 - e0), e0, e1);
+      const n = st.nOf(e);
+      cross.setAttribute('x1', X(e)); cross.setAttribute('x2', X(e)); cross.setAttribute('visibility', 'visible');
+      dot.setAttribute('cx', X(e)); dot.setAttribute('cy', Y(n)); dot.setAttribute('visibility', 'visible');
+      tip.show(`e = ${fmt(e, dx + 1)} → n = ${fmtInt(Math.ceil(n - 1e-9))}`, X(e), Y(n));
+    });
+    hit.addEventListener('pointerleave', () => { cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); tip.hide(); });
+
+    const inf = st.z * st.z * st.v / (st.e * st.e);
+    const finiteNote = st.N === Infinity ? '' : `<span>sin corregir por N serían <b>${fmtInt(Math.ceil(inf - 1e-9))}</b></span>`;
+    readout.innerHTML = `<div class="stats"><span>z = <b>${fmt(st.z, 3)}</b></span><span>n exacto = <b>${fmt(nNow, 2)}</b></span>${finiteNote}</div>
+      <div class="big">Hay que encuestar a <b>${fmtInt(Math.ceil(nNow - 1e-9))}</b> ${mode === 'media' ? 'unidades' : 'personas'}.</div>`;
+  });
+
+  const setMode = (m) => {
+    mode = m;
+    $('#n-s-box').hidden = m !== 'media';
+    $('#n-p-box').hidden = m !== 'prop';
+    $(m === 'media' ? '#n-media' : '#n-prop').checked = true;
+  };
+  $$('input[name="n-mode"]').forEach((i) => i.addEventListener('change', () => { setMode(i.value); render(); }));
+  [iS, iP, iE, iN, iNC].forEach((i) => i.addEventListener('input', render));
+  $$('[data-n]', root).forEach((b) => b.addEventListener('click', () => {
+    const [md, s, p, e, N, nc] = b.dataset.n.split(',');
+    setMode(md);
+    if (s) iS.value = s;
+    if (p) iP.value = p;
+    iE.value = e; iN.value = N; iNC.value = nc;
+    render();
+  }));
+})();
+
+/* ---------- 05 · Tipos de muestreo ---------- */
+(function tipos() {
+  const root = $('#w-tipos');
+  const plot = $('.plot', root), readout = $('.readout', root);
+  const tip = tooltip(plot);
+  const COLS = 20, ROWS = 10, NP = COLS * ROWS, NS_ = 20, NM = 110;
+  const pr = rng(55);
+  const keys = [];
+  for (let i = 0; i < NP; i++) {
+    const c = i % COLS;
+    const w = 0.8 - 0.5 * c / (COLS - 1);
+    keys.push({ i, k: Math.pow(pr(), 1 / w) });
+  }
+  keys.sort((a, b) => b.k - a.k);
+  const isM = new Array(NP).fill(false);
+  for (let j = 0; j < NM; j++) isM[keys[j].i] = true;
+  const colOf = (i) => i % COLS, rowOf = (i) => Math.floor(i / COLS);
+  const blockOf = (i) => Math.floor(rowOf(i) / 2) * 4 + Math.floor(colOf(i) / 5);
+
+  let method = 'simple', seed = 1;
+  let sel = new Set(), info = {};
+
+  const draw = () => {
+    const r = rng(seed * 7919 + 13);
+    sel = new Set(); info = {};
+    const all = [...Array(NP).keys()];
+    if (method === 'simple') shuffle(all, r).slice(0, NS_).forEach((i) => sel.add(i));
+    if (method === 'sist') {
+      const k = NP / NS_;
+      const start = Math.floor(r() * k);
+      for (let j = 0; j < NS_; j++) sel.add(start + j * k);
+      info = { k, start };
+    }
+    if (method === 'estr') {
+      const nM = Math.round(NM / NP * NS_);
+      shuffle(all.filter((i) => isM[i]), r).slice(0, nM).forEach((i) => sel.add(i));
+      shuffle(all.filter((i) => !isM[i]), r).slice(0, NS_ - nM).forEach((i) => sel.add(i));
+      info = { nM, nH: NS_ - nM };
+    }
+    if (method === 'cong') {
+      const blocks = shuffle([...Array(20).keys()], r).slice(0, 2).sort((a, b) => a - b);
+      all.forEach((i) => { if (blocks.includes(blockOf(i))) sel.add(i); });
+      info = { blocks };
+    }
+    if (method === 'acc') {
+      const px = r() * (COLS - 1), py = r() * (ROWS - 1);
+      all.sort((a, b) => ((colOf(a) - px) ** 2 + (rowOf(a) - py) ** 2) - ((colOf(b) - px) ** 2 + (rowOf(b) - py) ** 2));
+      all.slice(0, NS_).forEach((i) => sel.add(i));
+      info = { px, py };
+    }
+  };
+
+  /* en pantallas angostas la grilla se dibuja traspuesta (10 columnas × 20 filas) */
+  const tr = (W) => W < 520;
+  const cellFor = (W) => Math.min(34, (W - 4) / (tr(W) ? ROWS : COLS));
+  const render = chart(plot, (W) => Math.ceil(cellFor(W) * (tr(W) ? COLS : ROWS) + 6), (svg, W) => {
+    const t = tr(W);
+    const cell = cellFor(W);
+    const ox = (W - cell * (t ? ROWS : COLS)) / 2, oy = 3;
+    const gx = (c, r) => ox + cell * ((t ? r : c) + 0.5), gy = (c, r) => oy + cell * ((t ? c : r) + 0.5);
+    const cx = (i) => gx(colOf(i), rowOf(i)), cy = (i) => gy(colOf(i), rowOf(i));
+    const g = el('g', null, svg);
+    for (let b = 0; b < 20; b++) {
+      const bc = b % 4, br = Math.floor(b / 4);
+      const on = method === 'cong' && info.blocks && info.blocks.includes(b);
+      const bx = t ? br * 2 : bc * 5, by = t ? bc * 5 : br * 2, bw = t ? 2 : 5, bh = t ? 5 : 2;
+      el('rect', { x: ox + bx * cell + 1.5, y: oy + by * cell + 1.5, width: bw * cell - 3, height: bh * cell - 3, rx: 6, class: 'v-block' + (on ? ' on' : '') }, g);
+    }
+    const rad = Math.max(2.5, cell * 0.3);
+    for (let i = 0; i < NP; i++) {
+      const s = isM[i] ? 1 : 2;
+      if (sel.has(i)) el('circle', { cx: cx(i), cy: cy(i), r: rad, class: `v-f${s} v-ring` }, g);
+      else el('circle', { cx: cx(i), cy: cy(i), r: rad - 0.75, class: `v-out${s}` }, g);
+      const hit = el('rect', { x: cx(i) - cell / 2, y: cy(i) - cell / 2, width: cell, height: cell, class: 'v-hit' }, g);
+      hit.addEventListener('pointerenter', () => tip.show(`N.º ${i + 1} · ${isM[i] ? 'mujer' : 'hombre'} · manzana ${blockOf(i) + 1}${sel.has(i) ? ' · en la muestra' : ''}`, cx(i), cy(i) - rad));
+      hit.addEventListener('pointerleave', () => tip.hide());
+    }
+    if (method === 'acc') {
+      const x = gx(info.px, info.py), y = gy(info.px, info.py);
+      el('rect', { x: x - 5, y: y - 5, width: 10, height: 10, rx: 2, class: 'v-mark', transform: `rotate(45 ${x} ${y})` }, g);
+      el('text', { x: clamp(x, 70, W - 70), y: y < 24 ? y + 22 : y - 12, 'text-anchor': 'middle', class: 'v-strong halo' }, g, 'Salida del súper');
+    }
+  });
+
+  const describe = () => {
+    const m = [...sel].filter((i) => isM[i]).length, h = sel.size - m;
+    const pct = (x) => fmt(100 * x / sel.size, 0) + ' %';
+    const texts = {
+      simple: `Cada persona tiene la misma probabilidad de salir: n/N = 20/200 = 0,10.`,
+      sist: `k = N/n = 200/20 = 10. Se sorteó el arranque: N.º ${info.start + 1}, y después uno cada 10 (${info.start + 1}, ${info.start + 11}, ${info.start + 21}, …, ${info.start + 191}).`,
+      estr: `Proporcional: 110/200 · 20 = ${info.nM} mujeres y 90/200 · 20 = ${info.nH} hombres. La muestra copia exacto la composición de la población.`,
+      cong: `Se sortearon 2 de las 20 manzanas (${info.blocks ? info.blocks.map((b) => b + 1).join(' y ') : ''}) y se encuesta a todos sus habitantes. Solo hace falta el listado de manzanas.`,
+      acc: `No probabilístico: se encuesta a las 20 personas más cercanas al punto elegido. No se conoce la probabilidad de cada una y la muestra copia el perfil de esa zona.`
+    };
+    readout.innerHTML = `<div class="stats"><span>En la muestra: <b>${m} mujeres (${pct(m)})</b> · <b>${h} hombres (${pct(h)})</b></span><span>Población: 55 % · 45 %</span></div><div>${texts[method]}</div>`;
+  };
+
+  const update = () => { draw(); render(); describe(); };
+  $$('input[name="tp"]').forEach((i) => i.addEventListener('change', () => { method = i.value; update(); }));
+  $('#tp-redo').addEventListener('click', () => { seed++; update(); });
+  update();
+})();
+
+/* ---------- 06 · Bootstrap ---------- */
+(function bootstrap() {
+  const root = $('#w-boot');
+  const iEff = $('#bt-eff'), iNC = $('#bt-nc'), oEff = $('#bt-eff-out'), oNC = $('#bt-nc-out');
+  const readout = $('.readout', root);
+  const tip1 = tooltip($('#bt-p1')), tip2 = tooltip($('#bt-p2'));
+  const B = 10000, NB = 150;
+  let sampleSeed = 1, data = [], mean = 0, means = null;
+
+  const gen = () => {
+    const eff = +iEff.value;
+    const r = rng(1000 + sampleSeed * 97 + Math.round((eff + 5) * 8));
+    data = [];
+    for (let i = 0; i < NB; i++) {
+      const u = r();
+      let v;
+      if (u < 0.45) v = eff + 4 + 2.5 * randn(r);
+      else if (u < 0.9) v = eff - 4 + 2.5 * randn(r);
+      else v = eff + 5 * randn(r);
+      data.push(clamp(Math.round(v), -10, 10));
+    }
+    mean = data.reduce((a, b) => a + b, 0) / NB;
+    const rb = rng(7 + sampleSeed * 131 + Math.round((eff + 5) * 8));
+    means = new Float64Array(B);
+    for (let b = 0; b < B; b++) {
+      let s = 0;
+      for (let j = 0; j < NB; j++) s += data[(rb() * NB) | 0];
+      means[b] = s / NB;
+    }
+    means.sort();
+  };
+  gen();
+  const pctl = (q) => {
+    const pos = q * (B - 1), lo = Math.floor(pos), f = pos - lo;
+    return lo + 1 < B ? means[lo] * (1 - f) + means[lo + 1] * f : means[lo];
+  };
+
+  const r1 = chart($('#bt-p1'), 150, (svg, W, H) => {
+    const m = { l: 32, r: 8, t: 20, b: 24 };
+    const base = H - m.b;
+    const X = (v) => m.l + (v + 10.5) / 21 * (W - m.l - m.r);
+    const counts = new Array(21).fill(0);
+    data.forEach((v) => counts[v + 10]++);
+    const cmax = Math.max(...counts);
+    const t = ticks(0, cmax * 1.1, 3);
+    const yTop = Math.max(cmax * 1.1, t.values[t.values.length - 1]);
+    const Y = (c) => base - c / yTop * (base - m.t);
+    const g = el('g', null, svg);
+    t.values.forEach((v) => {
+      el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: 'v-grid' }, g);
+      el('text', { x: m.l - 6, y: Y(v) + 4, 'text-anchor': 'end' }, g, fmt(v, 0));
+    });
+    const sp = X(1) - X(0), bw = clamp(sp - 2, 1, 24);
+    counts.forEach((c, k) => {
+      const v = k - 10, cx = X(v);
+      const bar = c ? el('path', { d: barPath(cx - bw / 2, Y(c), bw, base - Y(c), Math.min(4, bw / 2)), class: 'v-f1 v-bar' }, g) : null;
+      hoverTarget(g, tip1, { x: cx - sp / 2, y: m.t, w: sp, h: base - m.t, ty: Y(c) }, () => `puntuación ${v}: ${c} ${c === 1 ? 'persona' : 'personas'}`, bar);
+    });
+    for (let v = -10; v <= 10; v += 5) el('text', { x: X(v), y: base + 16, 'text-anchor': 'middle' }, g, String(v));
+    el('line', { x1: m.l, x2: W - m.r, y1: base, y2: base, class: 'v-axis' }, g);
+    el('line', { x1: X(mean), x2: X(mean), y1: m.t - 6, y2: base, class: 'v-ref' }, g);
+    el('text', { x: X(mean) + (mean > 5 ? -6 : 6), y: m.t - 8, 'text-anchor': mean > 5 ? 'end' : 'start', class: 'v-lbl halo' }, g, `x̄ = ${fmt(mean, 2)}`);
+  });
+
+  const r2 = chart($('#bt-p2'), 244, (svg, W, H) => {
+    const nc = +iNC.value / 100;
+    const lo = pctl((1 - nc) / 2), hi = pctl((1 + nc) / 2);
+    const m = { l: 44, r: 12, t: 50, b: 28 };
+    const base = H - m.b;
+    let a = Math.min(means[0], -0.15), b = Math.max(means[B - 1], 0.15);
+    const pad = (b - a) * 0.04; a -= pad; b += pad;
+    const X = (v) => m.l + (v - a) / (b - a) * (W - m.l - m.r);
+    const NBIN = 36, bwid = (means[B - 1] - means[0]) / NBIN || 1;
+    const counts = new Array(NBIN).fill(0);
+    for (let i = 0; i < B; i++) counts[Math.min(NBIN - 1, Math.floor((means[i] - means[0]) / bwid))]++;
+    const cmax = Math.max(...counts);
+    const t = ticks(0, cmax * 1.08, 3);
+    const yTop = Math.max(cmax * 1.08, t.values[t.values.length - 1]);
+    const Y = (c) => base - c / yTop * (base - m.t);
+    const g = el('g', null, svg);
+    t.values.forEach((v) => {
+      el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: 'v-grid' }, g);
+      el('text', { x: m.l - 6, y: Y(v) + 4, 'text-anchor': 'end' }, g, fmt(v, 0));
+    });
+    el('rect', { x: X(lo), y: m.t, width: Math.max(0, X(hi) - X(lo)), height: base - m.t, class: 'v-wash2' }, g);
+    const pxw = X(means[0] + bwid) - X(means[0]);
+    const bw = clamp(pxw - 2, 1, 24);
+    counts.forEach((c, k) => {
+      const x0 = means[0] + k * bwid, cx = X(x0 + bwid / 2);
+      const bar = c ? el('path', { d: barPath(cx - bw / 2, Y(c), bw, base - Y(c), Math.min(4, bw / 2)), class: 'v-f1 v-bar' }, g) : null;
+      hoverTarget(g, tip2, { x: cx - pxw / 2, y: m.t, w: pxw, h: base - m.t, ty: Y(c) }, () => `medias ${fmt(x0, 2)} a ${fmt(x0 + bwid, 2)}: ${fmtInt(c)} remuestras`, bar);
+    });
+    const tx = ticks(a, b, Math.max(3, Math.floor((W - m.l - m.r) / 70)));
+    const dx = Math.max(1, decFor(tx.step));
+    tx.values.forEach((v) => el('text', { x: X(v), y: base + 16, 'text-anchor': 'middle' }, g, fmt(v, dx)));
+    el('line', { x1: m.l, x2: W - m.r, y1: base, y2: base, class: 'v-axis' }, g);
+    el('line', { x1: X(0), x2: X(0), y1: m.t - 14, y2: base, class: 'v-ref' }, g);
+    el('text', { x: X(0), y: m.t - 18, 'text-anchor': 'middle', class: 'v-lbl halo' }, g, 'H₀: 0');
+    [lo, hi].forEach((v, i) => {
+      el('line', { x1: X(v), x2: X(v), y1: m.t - 34, y2: base, class: 'v-l2' }, g);
+      el('text', { x: X(v), y: m.t - 38, 'text-anchor': i ? 'start' : 'end', dx: i ? 4 : -4, class: 'v-strong halo' }, g, fmt(v, 2));
+    });
+
+    oNC.textContent = pctTxt(+iNC.value);
+    const rej = lo > 0 || hi < 0;
+    readout.innerHTML = `<div class="stats"><span>x̄ de la muestra = <b>${fmt(mean, 2)}</b></span><span>IC ${fmtInt(nc * 100)} % = <b>[${fmt(lo, 2)}; ${fmt(hi, 2)}]</b></span></div>
+      <div class="pill ${rej ? 'on' : ''}"><span class="ico">${rej ? '✗' : '='}</span>${rej ? 'Se rechaza H₀: el 0 queda fuera del intervalo' : 'No se rechaza H₀: el 0 está dentro del intervalo'}</div>
+      <div>${rej ? `Con ${fmtInt(nc * 100)} % de confianza, el medicamento tiene un efecto ${lo > 0 ? 'positivo' : 'negativo'}.` : `Con estos datos no hay evidencia suficiente de efecto al ${fmtInt(nc * 100)} %.`}</div>`;
+  });
+
+  const full = () => {
+    oEff.textContent = (+iEff.value > 0 ? '+' : '') + fmt(+iEff.value, 2);
+    gen(); r1(); r2();
+  };
+  iEff.addEventListener('input', full);
+  iNC.addEventListener('input', r2);
+  $('#bt-redo').addEventListener('click', () => { sampleSeed++; full(); });
+  full();
+})();
+
+})();
+</script>
+</body>
+</html>
